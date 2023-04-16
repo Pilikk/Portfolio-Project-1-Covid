@@ -1,12 +1,10 @@
-
+--------------------------------------------------------------
+--Project Start
 Select *
 From PortfolioProject1..CovidDeaths
 Where continent is not NULL
 Order By 3,4
 
---Select *
---From PortfolioProject1..CovidVaccinations
---Order By 3,4
 
 --Select Data that we are going to be using
 Select location, date, total_cases, new_cases, total_deaths, population	
@@ -22,7 +20,6 @@ From PortfolioProject1..CovidDeaths
 Where location Like '%sia%'
 And continent is not NULL
 Order by 1,2 
-
 
 
 --Looking at Total Cases VS Population
@@ -42,7 +39,6 @@ Group by location, population
 Order by PercentPopulationInfected Desc
 
 
-
 --Showing Countries with Higest Death Count Per Population
 Select location, MAX(cast(total_deaths as int)) As TotalDeaths
 From PortfolioProject1..CovidDeaths
@@ -52,6 +48,8 @@ Group by location
 Order by TotalDeaths Desc
 
 
+
+--------------------------------------------------------------
 --LET"S BREAK THINGS DOWN BY CONTINENT
 
 --Showing Continents with Highest Deaths Count Per Population
@@ -79,7 +77,6 @@ where continent is not NULL
 Order by 1,2 
 
 
-
 --Looking at Total Population Vs Vaccinations
 Select dead.continent, dead.location, dead.date, dead.population, vacc.new_vaccinations,
 SUM(cast(vacc.new_vaccinations as int)) OVER (Partition by dead.location Order by dead.location, dead.date) as RollingPeopleVaccinated
@@ -89,6 +86,7 @@ Join PortfolioProject1..CovidVaccinations vacc
 	And dead.date = vacc.date
 Where dead.continent is not null
 Order by 2, 3
+
 
 --USE CTE
 With PopVsVacc (Continent, Location, Date, Population, new_vaccinations, RollingPeopleVaccinated)
@@ -119,6 +117,7 @@ New_Vaccinations numeric,
 RollingPeopleVaccinated numeric
 )
 
+
 Insert into #PercentPopulationVaccinated
 Select dead.continent, dead.location, dead.date, dead.population, vacc.new_vaccinations,
 SUM(cast(vacc.new_vaccinations as int)) OVER (Partition by dead.location Order by dead.location, dead.date) as RollingPeopleVaccinated
@@ -132,7 +131,6 @@ Select *, (RollingPeopleVaccinated/Population)*100
 From #PercentPopulationVaccinated
 
 
-
 --Creating View to store data for later visualizations
 Create View PercentPopulationVaccinated as
 Select dead.continent, dead.location, dead.date, dead.population, vacc.new_vaccinations,
@@ -143,6 +141,3 @@ Join PortfolioProject1..CovidVaccinations vacc
 	And dead.date = vacc.date
 Where dead.continent is not null
 --Order by 2, 3
-
-Select *
-From PercentPopulationVaccinated
